@@ -32,11 +32,12 @@ public class Globals {
 	public static String trainingFile = "small_input";
 	
 	// the debug flag
-	public static boolean IS_DEBUG = true;
+	public static boolean IS_DEBUG = false;
 	
 	// the threshold for testing on user id and movie id
-	public static int USER_ID_THRESHOLD = 1000000000;
-	public static int MOVIE_ID_THRESHOLD = 100000000;
+	public static boolean IS_LIMITED = false;
+	public static int USER_ID_THRESHOLD = 9999999;
+	public static int MOVIE_ID_THRESHOLD = 100000;
 	
 	// the global hashmap used for original algorithm. decepted.
 	public static HashMap<Integer,FeatureVector> ufvs = new HashMap<Integer,FeatureVector>();
