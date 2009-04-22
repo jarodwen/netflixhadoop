@@ -12,14 +12,21 @@ import org.apache.hadoop.mapred.Reporter;
 
 public class FeatureInitMapper extends MapReduceBase implements Mapper<LongWritable, Text, Text, NullWritable> {
 	
+	/**
+	 * The mapper for feature vector initializer, which simply extracts keys
+	 * from each line of ratings. Since we only need keys, here no contents 
+	 * for values (which is null).
+	 */
 	public void map(LongWritable key, Text value,
 			OutputCollector<Text, NullWritable> output, Reporter reporter)
 			throws IOException {
+		if(value.toString().trim() == "")
+			return;
 		String line[] = value.toString().split(",");
 		int movid = Integer.parseInt(line[0]);
 		int usrid = Integer.parseInt(line[1]);
 		
-		output.collect(new Text(String.valueOf(usrid)+"\t"+"1"), null);
-		output.collect(new Text(String.valueOf(movid)+"\t"+"0"), null);
+		output.collect(new Text(String.valueOf(usrid)+"\t"+"1"), NullWritable.get());
+		output.collect(new Text(String.valueOf(movid)+"\t"+"0"), NullWritable.get());
 	}
 }
