@@ -2,6 +2,7 @@ package csg339.mapreduce.featureinit;
 
 import java.io.IOException;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
@@ -9,6 +10,8 @@ import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
+
+import csg339.mapreduce.predlearner.util.Globals;
 
 //import org.apache.hadoop.mapred.TextOutputFormat;
 
@@ -33,6 +36,8 @@ public class Main {
 		 * */
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(Text.class);
+		
+		conf.setMapOutputValueClass(NullWritable.class);
 
 		conf.setMapperClass(FeatureInitMapper.class);
 		conf.setReducerClass(FeatureInitReducer.class);
@@ -41,10 +46,11 @@ public class Main {
 		conf.setOutputFormat(TextOutputFormat.class);
 
 		FileInputFormat
-				.setInputPaths(conf, new Path("/user/hadoop/projectJJ/small_input"));
+				.setInputPaths(conf, new Path(Globals.randomizedPath));
 
-		Path outPath = new Path("/user/hadoop/projectJJ/small_input_feat");
-
+		Path outPath = new Path(Globals.featPathPrefix + "0");
+		// For the situation that the output folder is existing, we need to
+		// delete it ahead.
 		try {
 			if (outPath.getFileSystem(conf).exists(outPath))
 				outPath.getFileSystem(conf).delete(outPath, true);
