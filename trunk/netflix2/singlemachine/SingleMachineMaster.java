@@ -15,12 +15,19 @@ import learner.LearnMap;
 import util.*;
 
 
-/** Handles loading of data, and tasking of distribution of learning across threads
+/** Handles loading of data, and tasking of distribution of learning across threads.
+ * 
+ * This class is working as a job tracker in a hadoop system.
  * 
  * @author jake
  *
  */
 public class SingleMachineMaster {
+	
+	public static long[] users = new long[Globals.numRatings];
+	public static int[] movies = new int[Globals.numRatings];
+	public static short[] ratings = new short[Globals.numRatings];
+	public static int numRatings = 0;
 	
 	/**
 	 * Loads a file from globally defined paths
@@ -94,7 +101,6 @@ public class SingleMachineMaster {
 	{
 		System.out.println("Learning ..");
 
-		
 		//Order initialization
 		int[] ratingOrder = new int[numRatings];
 		for(int i = 0;i < ratingOrder.length;i++)
@@ -163,6 +169,10 @@ public class SingleMachineMaster {
 			
 	}
 	
+	/**
+	 * Randomize the order of elements in the given array.
+	 * @param array
+	 */
 	public static void shuffle (int[] array) 
     {
         Random rng = new Random();   // i.e., java.util.Random.
@@ -176,9 +186,4 @@ public class SingleMachineMaster {
             array[k] = temp;
         }
     }
-
-	public static long[] users = new long[Globals.numRatings];
-	public static int[] movies = new int[Globals.numRatings];
-	public static short[] ratings = new short[Globals.numRatings];
-	public static int numRatings = 0;
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path=""/>
-	<classpathentry kind="lib" path="/hadoop/hadoop-0.19.1-core.jar"/>
 	<classpathentry kind="lib" path="/hadoop/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="/hadoop/hadoop-0.19.1-core.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

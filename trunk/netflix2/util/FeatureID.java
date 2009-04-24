@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.WritableComparable;
 
-public class FeatureID implements WritableComparable {
+public class FeatureID implements WritableComparable<Object> {
 	public enum FeatureType { movieFeature,userFeature};
 	private long idu;
 	private int idm;
