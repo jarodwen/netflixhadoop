@@ -19,6 +19,16 @@ import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.util.Progressable;
 import org.apache.hadoop.util.ReflectionUtils;
 
+/**
+ * The customized output format, which only outputs the value of each 
+ * data pair. Most of the code is just like the one in TextOutputFormat,
+ * except for the ones when handling the key.
+ * 
+ * @author jarod
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class RatingOutputFormat<K, V> extends FileOutputFormat<K, V> {
 
 	protected static class LineRecordWriter<K, V> implements RecordWriter<K, V> {
@@ -63,6 +73,7 @@ public class RatingOutputFormat<K, V> extends FileOutputFormat<K, V> {
 				return;
 			}
 			if (!nullValue) {
+				/* Only output the value here */
 				writeObject(value);
 			}
 			out.write(newline);

@@ -36,8 +36,15 @@ public class Globals {
 	
 	// the threshold for testing on user id and movie id
 	public static boolean IS_LIMITED = false;
-	public static int USER_ID_THRESHOLD = 9999999;
+	public static int USER_ID_THRESHOLD = 40000;
 	public static int MOVIE_ID_THRESHOLD = 100000;
+	
+	/**
+	 * The flag for the step we want to start with. This is for the case that previous
+	 * job is failed in the half and new jobs can be started from the point where the 
+	 * previous is failed.
+	 */
+	public static int START_FROM_STEP = 0;
 	
 	// the global hashmap used for original algorithm. decepted.
 	public static HashMap<Integer,FeatureVector> ufvs = new HashMap<Integer,FeatureVector>();

@@ -23,10 +23,10 @@ public class FeatureInitMapper extends MapReduceBase implements Mapper<LongWrita
 		if(value.toString().trim() == "")
 			return;
 		String line[] = value.toString().split(",");
-		int movid = Integer.parseInt(line[0]);
-		int usrid = Integer.parseInt(line[1]);
+		int movid = Integer.parseInt(line[1]);
+		int usrid = Integer.parseInt(line[0]);
 		
-		output.collect(new Text(String.valueOf(usrid)+"\t"+"1"), NullWritable.get());
-		output.collect(new Text(String.valueOf(movid)+"\t"+"0"), NullWritable.get());
+		output.collect(new Text(String.valueOf(usrid)+"\t"+"0"), NullWritable.get());
+		output.collect(new Text(String.valueOf(movid)+"\t"+"1"), NullWritable.get());
 	}
 }

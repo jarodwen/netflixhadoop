@@ -7,7 +7,13 @@ import org.apache.hadoop.io.Writable;
 
 
 public class FeatureVector implements Writable {
+	
+	/* The weight of each vector, which is used to calculate the final
+	 * weighted features by combining all the feature vectors from 
+	 * different mappers together. */
 	int weight;
+	
+	/* The feature vector */
 	double[] vector;
 
 	public FeatureVector()
@@ -58,6 +64,7 @@ public class FeatureVector implements Writable {
 	public int getSize() {
 		return vector.length;
 	}
+	
 	public void readFields(DataInput arg0) throws IOException {
 		weight = arg0.readInt();
 		vector = new double[arg0.readInt()];
@@ -79,14 +86,15 @@ public class FeatureVector implements Writable {
 	public double[] getVector() {
 		return vector.clone();
 	}
+	
 	public String toString()
 	{
 		String s = new String();
-		s += weight + " " + vector.length + "\n";
+		s += weight + "\t" + vector.length + "\n";
 
 		for(int i = 0 ; i < vector.length;i++)
 		{
-			s+= vector[i] + " ";
+			s+= vector[i] + "\t";
 		}
 		s += "\n";
 		return s;

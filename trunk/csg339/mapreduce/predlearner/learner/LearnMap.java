@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
-import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -32,46 +31,59 @@ import csg339.mapreduce.predlearner.util.Globals;
  * 
  */
 public class LearnMap implements
-		Mapper<LongWritable, Text, FeatureID, FeatureVector> {
+		Mapper<LongWritable, Text, Text, FeatureVector> {
 	/** Local user feature vectors */
 	private HashMap<Integer, double[]> ufvs = new HashMap<Integer, double[]>();
+	//private double[] ufv = new double[Globals.numFeatures];
 
 	/** Local movie feature vectors */
 	private HashMap<Integer, double[]> mfvs = new HashMap<Integer, double[]>();
+	//private double[] mfv = new double[Globals.numFeatures];;
 
+	private Path inPath;;
+	private JobConf inJobConf = new JobConf();
+	
 	/**
 	 * Configure takes in a path in "learnmap.features.path" and parses it
 	 */
 	public void configure(JobConf arg0) {
 		String pathStr = arg0.get("learnmap.features.path");
-		try {
-			FSDataInputStream inStream = FileSystem.get(arg0).open(
-					new Path(pathStr));
-			parseFeaturesFile(inStream);
-			inStream.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		inPath = new Path(pathStr);
+		inJobConf = arg0;
+		parseFeaturesFile();
+		/*featureFiles = DistributedCache.getLocalCacheFiles(arg0);
+		for(Path featureFile : featureFiles)
+			parseFeaturesFile(featureFile);*/
 
 	}
-
+	
 	/**
-	 * Parsing a feature file, the file is in the format: ID Type Feat1 Feat2
-	 * Featn-1 Featn
-	 * 
-	 * Where type is a boolean defined by: 0 for movie, 1 for user.
+	 * Parse the feature vectors from the input file, which is defined
+	 * in the Job Configuration.
+	 * This method will only be called for one time when the mapper is 
+	 * initialized.
 	 */
-	private void parseFeaturesFile(FSDataInputStream inStream) {
+	private void parseFeaturesFile(){
 		try {
 
 			BufferedReader fis = new BufferedReader(new InputStreamReader(
-					inStream));
+					FileSystem.get(inJobConf).open(inPath)));
 			String line = null;
 			while ((line = fis.readLine()) != null) {
-
+				// By default the string tokens are separated by tab
 				String tokenObjects[] = line.trim().split("\t");
-				if (tokenObjects.length != (2 + Globals.numFeatures)) {
+				/*
+				if(Integer.valueOf(tokenObjects[1]) == 1){
+					if(Integer.valueOf(tokenObjects[0]) != user_id){
+						continue;
+					}
+				}
+				if(Integer.valueOf(tokenObjects[1]) == 0){
+					if(Integer.valueOf(tokenObjects[0]) != movie_id){
+						continue;
+					}
+				}*/
+				if ((Globals.IS_DEBUG) && tokenObjects.length != (2 + Globals.numFeatures)) {
 					// Do some exception test here
 					System.err.println("Bad input file: ");
 					System.out.println(line);
@@ -82,18 +94,26 @@ public class LearnMap implements
 				}
 				double[] feats = new double[Globals.numFeatures];
 
-				for (int i = 2; i < tokenObjects.length; i++) {
-					feats[i] = Double.valueOf(tokenObjects[i]);
+				for (int i = 0; i < tokenObjects.length && i < Globals.numFeatures; i++) {
+					feats[i] = Double.valueOf(tokenObjects[i + 2]);
 				}
 
-				if (Integer.valueOf(tokenObjects[1]) == 1) { // movie
-																	// features
+				if (Integer.valueOf(tokenObjects[1]) == 1) { 
+					// movie features
+					//for (int i = 0; i < tokenObjects.length && i < Globals.numFeatures; i++) {
+					//	mfv[i] = Double.valueOf(tokenObjects[i + 2]);
+					//}
 					mfvs.put(Integer.valueOf(tokenObjects[0]), feats);
-				} else { // user features
+				} else { 
+					// user features
+					//for (int i = 0; i < tokenObjects.length && i < Globals.numFeatures; i++) {
+					//	ufv[i] = Double.valueOf(tokenObjects[i + 2]);
+					//}
 					ufvs.put(Integer.valueOf(tokenObjects[0]), feats);
 				}
 
 			}
+			fis.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,11 +129,14 @@ public class LearnMap implements
 	 */
 	public void map(LongWritable arg0, // Unused key
 			Text ratingInput, // Input ratng
-			OutputCollector<FeatureID, // Target output
+			OutputCollector<Text, // Target output
 			FeatureVector> outCollector, // Target output object
 			Reporter arg3) // Reporter (generally unused)
 			throws IOException {
-		System.out.println("startMap");
+		if(Globals.IS_DEBUG) System.out.println("startMap");
+		
+		if(ratingInput.toString().trim() == "")
+			return;
 
 		// Parsing input text
 		String tempString = ratingInput.toString();
@@ -121,7 +144,11 @@ public class LearnMap implements
 
 		// Parse in user, movie, rating tuple
 		int user = Integer.valueOf(tempElements[0]);
+		if(Globals.IS_LIMITED && user > Globals.USER_ID_THRESHOLD)
+			return;
 		int movie = Integer.valueOf(tempElements[1]);
+		if(Globals.IS_LIMITED && movie > Globals.MOVIE_ID_THRESHOLD)
+			return;
 		short rating = Short.valueOf(tempElements[2]);
 
 		FeatureID movieID = new FeatureID(movie,
@@ -129,29 +156,34 @@ public class LearnMap implements
 		FeatureID userID = new FeatureID(user,
 				FeatureID.FeatureType.userFeature);
 
-		System.out.print(" UFVS:");
+		// Debug part
+		/*
+		if(Globals.IS_DEBUG) System.out.print(" UFVS:");
 		for (Integer i : ufvs.keySet())
-			System.out.print(i + " ");
-		System.out.println("");
+			if(Globals.IS_DEBUG) System.out.print(i + " ");
+		if(Globals.IS_DEBUG) System.out.println("");
 
-		System.out.print(" MFVS:");
+		if(Globals.IS_DEBUG) System.out.print(" MFVS:");
 		for (Integer i : mfvs.keySet())
-			System.out.print(i + " ");
-		System.out.println("");
+			if(Globals.IS_DEBUG) System.out.print(i + " ");
+		if(Globals.IS_DEBUG) System.out.println("");
 
-		System.out.println("We want: u" + user + "m" + movie);
+		if(Globals.IS_DEBUG) System.out.println("We want: u" + user + "m" + movie);
 
 		if (ufvs.containsKey(user) != true)
-			System.out.println("issue");
+			if(Globals.IS_DEBUG) System.out.println("issue");
 		if (ufvs.get(user) == null)
-			System.out.println("issue2");
+			if(Globals.IS_DEBUG) System.out.println("issue2");
+			*/
+		// Debug part end
+		
 		double[] ufv = ufvs.get(user);
 		double[] mfv = mfvs.get(movie);
 
 		// double p = LearnMap.PredictRating(movie,
 		// user,ratingSet.features.get(movieID),ratingSet.features.get(userID));
 		double p = LearnMap.PredictRating(movie, user, mfv, ufv);
-		double err = rating - p;
+		double err; // = rating - p;
 
 		// Baseline related: (unused)
 		// //obu = baselineUser[userIdHash];
@@ -176,14 +208,16 @@ public class LearnMap implements
 			// Train user
 			// ratingSet.features.get(userID).set(f,Globals.LRATE *( err * mf -
 			// Globals.K * cf));
-			ufv[f] = Globals.LRATE
+			ufv[f] = ufv[f] + Globals.LRATE
 					* (err * cachedMovieFeature - Globals.K * cachedUserFeature);
+			if(Globals.IS_DEBUG) System.out.print(String.valueOf(ufv[f]));
 
 			// Train movie
 			// ratingSet.features.get(movieID).set(f,Globals.LRATE *( err * cf -
 			// Globals.K * mf));
-			mfv[f] = Globals.LRATE
+			mfv[f] = mfv[f] + Globals.LRATE
 					* (err * cachedUserFeature - Globals.K * cachedMovieFeature);
+			if(Globals.IS_DEBUG) System.out.print(String.valueOf(mfv[f]));
 
 			// Cache off and truncate results
 			p = p - (cachedUserFeature * cachedMovieFeature) + ufv[f] * mfv[f];
@@ -192,12 +226,12 @@ public class LearnMap implements
 			else if (p < 1)
 				p = 1;
 		}
-		// output to a file
-		System.out.println("Mapper on key ("+userID.getId()+", 0)");
-		outCollector.collect(userID, new FeatureVector(ufv));
-		System.out.println("Mapper on key ("+movieID.getId()+", 1)");
-		outCollector.collect(movieID, new FeatureVector(mfv));
-		System.out.println("endMap");
+		// output to reducer/combiner
+		if(Globals.IS_DEBUG) System.out.println("Mapper on key ("+userID.getId()+", 0)");
+		outCollector.collect(new Text(userID.toString()), new FeatureVector(ufv));
+		if(Globals.IS_DEBUG) System.out.println("Mapper on key ("+movieID.getId()+", 1)");
+		outCollector.collect(new Text(movieID.toString()), new FeatureVector(mfv));
+		if(Globals.IS_DEBUG) System.out.println("endMap");
 	}
 
 	public void close() throws IOException {
