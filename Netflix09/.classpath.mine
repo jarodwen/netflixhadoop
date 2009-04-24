@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/usr/share/hadoop/hadoop-0.19.1-ant.jar"/>
+	<classpathentry kind="lib" path="/usr/share/hadoop/hadoop-0.19.1-core.jar"/>
+	<classpathentry kind="lib" path="/usr/share/hadoop/hadoop-0.19.1-examples.jar"/>
+	<classpathentry kind="lib" path="/usr/share/hadoop/hadoop-0.19.1-test.jar"/>
+	<classpathentry kind="lib" path="/usr/share/hadoop/hadoop-0.19.1-tools.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
