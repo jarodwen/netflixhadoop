@@ -13,8 +13,9 @@ public class LearnMap implements Runnable
 	int[] ratingOrder;
 	int lowerRange;
 	int upperRange;
+	
 	/**
-	 * 
+	 * Constructor.
 	 * @param ratingOrder
 	 * @param out2
 	 * @param i lower bounds
@@ -31,7 +32,7 @@ public class LearnMap implements Runnable
 	{
 
 		out.init(ratingOrder, lowerRange, upperRange);
-		int rat = SingleMachineMaster.numRatings;
+		//int rat = SingleMachineMaster.numRatings;
 		try {
 			for(int i = lowerRange; i < upperRange;i++)
 			{
@@ -47,6 +48,17 @@ public class LearnMap implements Runnable
 
 
 	}
+	
+	/**
+	 * The training method, using the input of a rating, and also the feature
+	 * vectors for the specific user and movie.
+	 * @param user
+	 * @param movie
+	 * @param rating
+	 * @param mfv
+	 * @param ufv
+	 * @throws IOException
+	 */
 	public void learn(long user, int movie, short rating,FeatureVector mfv,FeatureVector ufv) throws IOException {
 		//long start;
 		//start = System.nanoTime();
@@ -94,6 +106,14 @@ public class LearnMap implements Runnable
 
 	}
 
+	/**
+	 * Predict the rating based on the given feature vectors.
+	 * @param movieId
+	 * @param userId
+	 * @param movieFeatures
+	 * @param userFeatures
+	 * @return
+	 */
 	static double PredictRating(int movieId, long userId,FeatureVector movieFeatures,FeatureVector userFeatures)
 	{
 		double returnPrediction = 1;
