@@ -2,7 +2,7 @@ package csg339.mapreduce.predlearner.learner;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+//import java.io.UnsupportedEncodingException;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.Text;
@@ -21,15 +21,15 @@ public class NetflixOutputFormat  extends FileOutputFormat<FeatureID, FeatureVec
 	protected static class LineRecordWriter  implements RecordWriter<FeatureID, FeatureVector> {
 		private static final String utf8 = "UTF-8";
 
-		private static final byte[] newline;
-		static {
-			try {
-				newline = "\n".getBytes(utf8);
-			} catch (UnsupportedEncodingException uee) {
-				throw new IllegalArgumentException("can't find " + utf8
-						+ " encoding");
-			}
-		}
+//		private static final byte[] newline;
+//		static {
+//			try {
+//				newline = "\n".getBytes(utf8);
+//			} catch (UnsupportedEncodingException uee) {
+//				throw new IllegalArgumentException("can't find " + utf8
+//						+ " encoding");
+//			}
+//		}
 
 		protected DataOutputStream out;
 

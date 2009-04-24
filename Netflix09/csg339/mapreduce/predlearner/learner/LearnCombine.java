@@ -13,6 +13,12 @@ import org.apache.hadoop.mapred.Reporter;
 import csg339.mapreduce.predlearner.util.FeatureVector;
 import csg339.mapreduce.predlearner.util.Globals;
 
+/**
+ * The Combiner class, for part of the reducing jobs in a parallel
+ * way.
+ * @author jarod
+ *
+ */
 public class LearnCombine implements
 		Reducer<Text, FeatureVector, Text, FeatureVector> {
 

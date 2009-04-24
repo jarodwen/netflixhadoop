@@ -16,6 +16,13 @@ import org.apache.hadoop.mapred.TextOutputFormat;
 import csg339.mapreduce.predlearner.util.FeatureVector;
 import csg339.mapreduce.predlearner.util.Globals;
 
+/**
+ * This class contains the job configuration for the map/reduce
+ * interative SVD algorithm. 
+ * 
+ * @author jake & jarod
+ *
+ */
 public class LearnJob {
 
 	

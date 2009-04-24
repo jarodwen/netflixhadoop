@@ -1,8 +1,9 @@
 package csg339.mapreduce.predictor.dbinterface;
 
 import org.apache.hadoop.mapred.lib.db.DBOutputFormat;
+import org.apache.hadoop.mapred.lib.db.DBWritable;
 
-public class UpdateDBOutputFormat extends DBOutputFormat {
+public class UpdateDBOutputFormat<K extends DBWritable, V> extends DBOutputFormat<K, V> {
 
 
 	  /**
