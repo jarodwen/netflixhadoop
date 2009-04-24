@@ -5,7 +5,11 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
-
+/**
+ * The class containing feature vectors for a certain user or movie.
+ * @author jake & jarod
+ *
+ */
 public class FeatureVector implements Writable {
 	
 	/* The weight of each vector, which is used to calculate the final

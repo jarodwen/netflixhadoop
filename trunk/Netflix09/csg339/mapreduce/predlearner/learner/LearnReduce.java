@@ -13,6 +13,13 @@ import org.apache.hadoop.mapred.Reporter;
 import csg339.mapreduce.predlearner.util.FeatureVector;
 import csg339.mapreduce.predlearner.util.Globals;
 
+/**
+ * The reduce class for the iterative SVD algorithm, which combines all
+ * the tuned feature vectors on the given key into one feature vector by
+ * averaging for final output.
+ * @author jake & jarod
+ *
+ */
 public class LearnReduce implements
 		Reducer<Text, FeatureVector, Text, Text> {
 

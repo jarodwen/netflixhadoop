@@ -6,6 +6,16 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.WritableComparable;
 
+/**
+ * The class for a key pair of (id, type). However this class now doesn't
+ * work well with the reducer of the hadoop system. The reason for the 
+ * conflict has not been figured out. 
+ * 
+ * Currently in the code, a Text key is used to replace this.
+ * 
+ * @author jake & jarod
+ *
+ */
 public class FeatureID implements WritableComparable<Object> {
 	
 	/* The enum type of the id type */
